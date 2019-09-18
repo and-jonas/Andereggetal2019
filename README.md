@@ -13,7 +13,7 @@ Folder `Utils` contains functions for the pre-processing of spectra, calculation
 
 Folder `Analysis`contains scripts to implement the analysis and obtain results contained in the study. 
 
-## Function and Script description
+## Details: Functions
 
 ### 001_spectra_utils.R
 
@@ -42,3 +42,16 @@ Folder `Analysis`contains scripts to implement the analysis and obtain results c
 1. `perform_rfe` performs recursive feature elimination using random forest or cubist regression as base learners. This is essentially a wrapper function for `ranger::ranger` and `Cubist::cubist` using `caret::train` and `caret::trainControl`.
 2. `tidy_rfe_output` gathers results of resamples and creates summary statistics of performance and feature ranks.
 3. `plot_perf_profile` creates simple performance profile plots.
+
+### 004_h2_BLUEs_utils.R
+
+1. `f_spats` fits the SpATS model to raw plot-based data (wrapper for `SpATS::SpATS`)
+2. `spat_corr_spats` computes spatially corrected values for each experimental plot from the spats object (`object$intercept` + `object$coeff`+ `object$residuals`).  
+3. `get_h2` calculates heritability across years using spatially corrected plot values and the formula proposed by Cullis. 
+
+## Details: Scripts
+
+1. `01_prep_spcdat.R` Prepare spectral datasets for evaluation of spectral indices and full-spectrum models.
+2. `02_full_spc_cv.R` Train and evaluate full-spectrum models
+3. `03_perform_rfe.R` An example script that performs rfe using cubist as base learner for the selection of the most important wavelengths to predict visual senescence scorings in 2016. 
+4. `04_get_dynpars.R` 
