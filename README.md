@@ -47,11 +47,15 @@ Folder `Analysis`contains scripts to implement the analysis and obtain results c
 
 1. `f_spats` fits the SpATS model to raw plot-based data (wrapper for `SpATS::SpATS`)
 2. `spat_corr_spats` computes spatially corrected values for each experimental plot from the spats object (`object$intercept` + `object$coeff`+ `object$residuals`).  
-3. `get_h2` calculates heritability across years using spatially corrected plot values and the formula proposed by Cullis. 
+3. `get_BLUE_spats` computes the best linear unbiased estimator (BLUE) for each genotype. 
+4. `get_h2` calculates heritability across years using spatially corrected plot values and the formula proposed by Cullis. 
 
 ## Details: Scripts
 
 1. `01_prep_spcdat.R` Prepare spectral datasets for evaluation of spectral indices and full-spectrum models.
 2. `02_full_spc_cv.R` Train and evaluate full-spectrum models
-3. `03_perform_rfe.R` An example script that performs rfe using cubist as base learner for the selection of the most important wavelengths to predict visual senescence scorings in 2016. 
-4. `04_get_dynpars.R` 
+3. `03_perform_rfe.R` An example script that performs rfe using cubist as base learner for the selection of the most important wavelengths to predict visual senescence scorings for the 2016 experiment. 
+4. `04_get_dynpars.R` Extract dynamics parameters from visual senescence scorings. 
+5. `05_get_dynpars_SI.R` Extract dynamics parameters from spectral indices.
+6. `06_SI_perf.R` Evaluate the performance of spectral indices to track visually assessed senescence dynamics. 
+
