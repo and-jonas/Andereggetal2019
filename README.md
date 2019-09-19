@@ -26,7 +26,9 @@ Folder `Analysis`contains scripts to implement the analysis and obtain results c
 7. `f_spc_trim` removes noisy parts of the signal in pre-determined ranges
 8. `f_cont_rem` performs continuum removal (wrapper for `prospectr::ContinuumRemoval`)
 9. `f_match_join` joins spectral and scoring datasets by assessment/measurement dates, using a supplied template of matching dates. This function also adds growing degree days for scoring and measurement time points.
+9. `get_dynpars_SI` extracts dynamics parameters from spectral indices. 
 10. `get_errors_and_dynpars`Performs linear interpolation of scorings and index values (data in growing degree days after heading),  extracts dynamics parameters and calculates overall error between the two fitted curves. Parametric models instead of linear interpolation are also supported.
+11. Helper functions to invert index values, perform correlation tests, fit parametric models, perform linear interpolation and extract parameters from fits. These functions are called in the functions described above. 
 
 
 ### 002_full_spc_utils.R
@@ -57,5 +59,5 @@ Folder `Analysis`contains scripts to implement the analysis and obtain results c
 3. `03_perform_rfe.R` An example script that performs rfe using cubist as base learner for the selection of the most important wavelengths to predict visual senescence scorings for the 2016 experiment. 
 4. `04_get_dynpars.R` Extract dynamics parameters from visual senescence scorings. 
 5. `05_get_dynpars_SI.R` Extract dynamics parameters from spectral indices.
-6. `06_SI_perf.R` Evaluate the performance of spectral indices to track visually assessed senescence dynamics. 
+6. `06_SI_perf.R` Evaluate the performance of spectral indices to track visually assessed senescence dynamics. This includes selected published spectral indices and all posissible combinations of wavelenths in the PSRI'. 
 
