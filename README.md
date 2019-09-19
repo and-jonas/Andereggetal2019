@@ -37,7 +37,7 @@ Folder `Analysis`contains scripts to implement the analysis and obtain results c
 2. `perform_sampling` performs up- or down-sampling to create balanced evaluation datasets (wrapper for `caret::upSample` or `caret::downSample`)
 3. `get_RMSE_sample` calculates the root mean square error (RMSE) of up- or downsamples
 4. `extract_predobs` creates predictions using a fitted model and extracts the corresponding real observations
-5. `eval_full_spc_cross` fits full-spectrum models, extracts performance metrics, performs sampling and extracts predobs for these samples, performs all possible variants of leave-year(s)-out cross-validation. This is essentially a wrapper function for `ranger::ranger` and `Cubist::cubist` using `caret::train` and `caret::trainControl`.
+5. `eval_full_spc_cross` fits full-spectrum models, extracts performance metrics, performs sampling and extracts predobs for these samples, performs all possible variants of leave-year(s)-out cross-validation. This is essentially a wrapper function for `ranger::ranger` and `Cubist::cubist` via the `caret::train` interface. This function is designed to run in parallel on the high performance computing cluster of ETH Zürich. Must be serialized if no access to such a facility is available. Very long computation times should be expected. 
 
 ### 003_rfe_utils.R
 
@@ -56,7 +56,7 @@ Folder `Analysis`contains scripts to implement the analysis and obtain results c
 
 1. `01_prep_spcdat.R` Prepare spectral datasets for evaluation of spectral indices and full-spectrum models.
 2. `02_full_spc_cv.R` Train and evaluate full-spectrum models
-3. `03_perform_rfe.R` An example script that performs rfe using cubist as base learner for the selection of the most important wavelengths to predict visual senescence scorings for the 2016 experiment. 
+3. `03_perform_rfe.R` An example script that performs rfe using cubist as base learner for the selection of the most important wavelengths to predict visual senescence scorings for the 2016 experiment. This script is designed to run on the high performance computing cluster of ETH Zürich. It must be serialized if no access to such a facility is available. Except very long computation times. 
 4. `04_get_dynpars.R` Extract dynamics parameters from visual senescence scorings. 
 5. `05_get_dynpars_SI.R` Extract dynamics parameters from spectral indices.
 6. `06_SI_perf.R` Evaluate the performance of spectral indices to track visually assessed senescence dynamics. This includes selected published spectral indices and all posissible combinations of wavelenths in the PSRI'. 
