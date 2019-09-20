@@ -49,7 +49,7 @@ Folder `Analysis`contains scripts to implement the analysis and obtain results c
 
 #### 003_rfe_utils.R
 
-1. `perform_rfe` performs recursive feature elimination using random forest or cubist regression as base learners. This is essentially a wrapper function for `ranger::ranger` and `Cubist::cubist` using `caret::train` and `caret::trainControl`.
+1. `perform_rfe` performs recursive feature elimination using random forest or cubist regression as base learners. This is essentially a wrapper function for `ranger::ranger` and `Cubist::cubist` using the`caret::train` interface.
 2. `tidy_rfe_output` gathers results of resamples and creates summary statistics of performance and feature ranks.
 3. `plot_perf_profile` creates simple performance profile plots.
 
