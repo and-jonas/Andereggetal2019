@@ -26,7 +26,7 @@ sinkdir <- paste0(path_to_data, "other_data/spctempfeat/") #Specify output direc
 
 # read data
 BLUEs <- readRDS(paste0(path_to_data, "OUT/BLUEs.rds"))
-dynpars <- readRDS(paste0(path_to_data, "helper_files/dynpars_decorr.rds"))
+dynpars <- read.csv(paste0(path_to_data, "helper_files/dynpars_decorr.csv")) %>% pull(x) %>% as.character()
 dynpars <- c(dynpars, "onsen_lin_SI_NDVI_nb_ASD",
              "midsen_lin_SI_NDVI_nb_ASD",
              "endsen_lin_SI_NDVI_nb_ASD",

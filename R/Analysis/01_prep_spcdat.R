@@ -28,6 +28,7 @@
 library(tidyverse)
 library(prospectr)
 library(stringr)
+library(data.table)
 
 path_to_utils <- "" #Specify path to utils folder
 path_to_data <- "" #Specify path to data folder
@@ -44,13 +45,34 @@ source(paste0(path_to_utils, "001_spectra_Utils.R"))
 
 #Load data
 
-spc <- readRDS(paste0(path_to_data, "spc_data/spc_raw.rds")) #read raw reflectance spectra
-scr_sca <- readRDS(paste0(path_to_data, "scr_data/scr_sca.rds")) #read scaled scorings
-scr_usca <- readRDS(paste0(path_to_data, "scr_data/scr_usca.rds")) #read unscaled scorings
+spc <- data.table::fread(paste0(path_to_data, "spc_data/spc_raw.csv")) %>% 
+  mutate(Plot_ID = as.factor(Plot_ID),
+         meas_date = as.Date(meas_date),
+         replicate = as.factor(replicate)) %>% 
+  as_tibble()
+
+scr_sca <- data.table::fread(paste0(path_to_data, "scr_data/scr_sca.csv")) %>% 
+  dplyr::mutate(Plot_ID = as.factor(Plot_ID),
+         Gen_Name = as.factor(Gen_Name),
+         grading_date = as.Date(grading_date),
+         heading_date = as.Date(heading_date)) %>% 
+  as_tibble()
+
+scr_usca <- data.table::fread(paste0(path_to_data, "scr_data/scr_usca.csv")) %>% 
+  as_tibble() %>% 
+  mutate(Plot_ID = as.factor(Plot_ID),
+         Gen_Name = as.factor(Gen_Name),
+         grading_date = as.Date(grading_date),
+         heading_date = as.Date(heading_date),
+         SnsFl0 = as.double(SnsFl0),
+         SnsCnp = as.double(SnsCnp)) %>% 
+  as_tibble()
 
 gddah <- read.csv(paste0(path_to_data, "helper_files/gddah_data.csv")) %>% 
-  mutate(meas_date = meas_date %>% as.Date())
-match_dates <- readxl::read_excel(paste0(path_to_data, "helper_files/match_dates.xlsx")) #load matching dates template
+  mutate(meas_date = meas_date %>% as.Date()) %>% 
+  as_tibble()
+
+match_dates <- read.csv(paste0(path_to_data, "helper_files/match_dates.csv"), sep = ";") #load matching dates template
 
 #====================================================================================== -
 

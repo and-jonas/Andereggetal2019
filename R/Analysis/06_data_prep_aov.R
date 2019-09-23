@@ -27,14 +27,17 @@
 .libPaths("") #Specify path to R Libraries
 
 library(tidyverse)
+library(gapminder)
 
 path_to_data <- ""#Specify path to data
 
 #====================================================================================== -
 
-grnyld <- readRDS(paste0(path_to_data, "other_data/gy.rds")) #grain yield
-grnprt <- readRDS(paste0(path_to_data, "other_data/gpc.rds")) #grain protein concentration
-head <- readRDS(paste0(path_to_data, "other_data/heading.rds")) # heading date
+grnyld <- read.csv(paste0(path_to_data, "other_data/gy.csv")) #grain yield
+grnprt <- read.csv(paste0(path_to_data, "other_data/gpc.csv")) #grain protein concentration
+head <- read.csv(paste0(path_to_data, "other_data/heading.csv")) %>% # heading date
+  mutate(heading_date = as.Date(heading_date),
+         heading_DAS = as.numeric(heading_DAS))
 
 #rearrange output of parameter extraction (SI)
 excl_plots <- read.csv(paste0(path_to_data, "other_data/lodging.csv"), sep = ";") %>% filter(Lodging %in% c("l", "ll")) %>% pull(Plot_ID)
@@ -71,7 +74,11 @@ Data <- list(head, grnyld, grnprt, pars_scr, pars_SI) %>%
   Reduce(function(dtf1,dtf2) full_join(dtf1, dtf2, by = "Plot_ID"), .)
 
 # Add design
-exp_design <- readRDS(paste0(path_to_data, "helper_files/exp_design.rds"))
+exp <- read.csv(paste0(path_to_data, "helper_files/exp_design.csv")) %>% 
+  as_tibble() %>% 
+  mutate_at(vars(Lot, RangeLot, RowLot, Range, Row, RowBL, RangeBL), funs(as.numeric)) %>% 
+  mutate_at(vars(Gen_ID, Rep, Xf, Yf), funs(as.factor))
+
 Data <- full_join(exp_design, Data, by = "Plot_ID") %>%
   as_tibble() %>% 
   arrange(Exp, Lot, RangeLot, RowLot)

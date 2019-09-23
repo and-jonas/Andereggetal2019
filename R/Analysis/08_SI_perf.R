@@ -57,7 +57,7 @@ source(paste0(path_to_utils, "001_spectra_utils.R"))
 data <- readRDS(paste0(path_to_data, "OUT/SI/SI_forperf.rds"))
 data <- data[!data$Lot == 6, ] %>% droplevels() #remove incomplete time series
 data <- data[!(data$Lot == 3 & data$Exp == "FPWW022"), ] #remove incomplete time series
-ind <- readRDS(paste0(path_to_data, "helper_files/SI_decorr.rds")) #Define subset of SI for which to carry out the analysis
+ind <- read.csv(paste0(path_to_data, "helper_files/SI_decorr.csv")) %>% pull(x) %>% as.character()
 ind <- c(ind, "SI_NDVI_nb_ASD") #add narrow-band NDVI to the dataset as benchmark
 
 plan("multiprocess")
