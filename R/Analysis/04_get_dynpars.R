@@ -44,7 +44,7 @@ source(paste0(path_to_utils, "001_spectra_utils.R"))
 #====================================================================================== -
 
 #load data
-data <- readRDS(paste0(path_to_data, "scr_sca.rds"))
+data <- readRDS(paste0(path_to_data, "scr_data/scr_sca.rds"))
 
 # extract DynPars: Scorings ----
 data <- data %>% 

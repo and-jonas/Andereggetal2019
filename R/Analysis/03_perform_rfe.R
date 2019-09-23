@@ -53,7 +53,7 @@ sinkdir <- paste0(path_to_data, "OUT/rfe_output/") #Specify output directory
 #====================================================================================== -
 
 #get data for one of the three years
-data <- readRDS(paste0(path_to_data, "MM/smth_avg_rflt_bin3.rds")) %>%
+data <- readRDS(paste0(path_to_data, "OUT/MM/smth_avg_rflt_bin3.rds")) %>%
   filter(Exp == "FPWW012") %>% #select a subset
   dplyr::select(SnsCnp, contains("rflt"))
 
@@ -80,6 +80,6 @@ rfe <- perform_rfe(response = "SnsCnp", base_learner = "cubist",
 stopCluster(cluster)
 registerDoSEQ()
 
-saveRDS(rfe, paste0(sinkdir, "rfe_out.rds"))
+saveRDS(rfe, paste0(sinkdir, "rfe_out_1.rds"))
 
 #====================================================================================== -

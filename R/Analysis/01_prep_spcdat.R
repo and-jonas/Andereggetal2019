@@ -56,17 +56,15 @@ match_dates <- readxl::read_excel(paste0(path_to_data, "helper_files/match_dates
 
 #> Spectral Index datasets ----
 
-#update sinkdir
-if(dir.exists(paste0(sinkdir, "SI"))){
-  quit(save = "ask")  
-} else {
+#create sink directory
+if(!dir.exists(paste0(sinkdir, "SI"))){
   dir.create(paste0(sinkdir, "SI"))
-}
+} else NULL
 
 #create dataset to extract dynamics parameters
 ##This dataset comprises all measurement dates available,
 ##except for those carried out prior to heading
-SI <- spc %>%
+spc %>%
   f_spc_smooth(3, 11, 0) %>%
   #average spectra for each plot
   f_spc_avg() %>% 
@@ -78,12 +76,12 @@ SI <- spc %>%
   #add gddah data
   left_join(., gddah, by = c("Plot_ID", "meas_date")) %>% 
   #rearrange
-  dplyr::select(-contains("sI/SI"), everything()) %>% 
-  saveRDS(paste0(sinkdir, "SI_forpars.rds"))
+  dplyr::select(-contains("SI"), everything()) %>% 
+  saveRDS(paste0(sinkdir, "SI/SI_forpars.rds"))
 
 #create dataset to quantify index performance
 #in approximating visually observed senescence dynamics
-SI <- spc %>%
+spc %>%
   #smooth spectra using the Savitzky-Golay smoothing filter
   f_spc_smooth(3, 11, 0) %>%
   #average spectra for each plot
@@ -100,10 +98,10 @@ SI <- spc %>%
   # #drop rows with missing data
   # filter(complete.cases(.)) %>% 
   as_tibble() %>% 
-  saveRDS(paste0(sinkdir, "sI/SI_forperf.rds"))
+  saveRDS(paste0(sinkdir, "SI/SI_forperf.rds"))
 
 #create dataset of PSRI' with different constituting wavelengths
-SI <- spc %>%
+spc %>%
   #smooth spectra using the Savitzky-Golay smoothing filter
   f_spc_smooth(3, 11, 0) %>%
   #average spectra for each plot
@@ -122,18 +120,16 @@ SI <- spc %>%
   #these can be recognized by their non-reversion
   #these can be excluded
   dplyr::select(Exp:ref_date, ends_with("_r")) %>% 
-  saveRDS(paste0(sinkdir, "sI/SI_PSRI.rds"))
+  saveRDS(paste0(sinkdir, "SI/SI_PSRI.rds"))
   
 #====================================================================================== -
 
 #> Datasets for full-spc models ----
 
 #create sink directory
-if(dir.exists(paste0(sinkdir, "MM"))){
-  quit(save = "ask")  
-  } else {
+if(!dir.exists(paste0(sinkdir, "MM"))){
   dir.create(paste0(sinkdir, "MM"))
-  }
+  } else NULL
 
 spc %>%
   f_spc_smooth(3, 11, 0) %>%
@@ -142,6 +138,7 @@ spc %>%
   f_spc_trim() %>%
   f_match_join(., scr_usca, gddah, match_dates) %>%
   filter(complete.cases(.)) %>% 
+  as_tibble() %>% 
   saveRDS(paste0(sinkdir, "MM/smth_avg_rflt_bin3.rds")) 
 
 spc %>%
@@ -151,6 +148,7 @@ spc %>%
   f_spc_trim() %>%
   f_match_join(.,  scr_usca, gddah, match_dates) %>%
   filter(complete.cases(.)) %>% 
+  as_tibble() %>% 
   saveRDS(paste0(sinkdir, "MM/avg_bin3_smth_der1.rds"))
 
 spc %>%
@@ -160,7 +158,8 @@ spc %>%
   f_cont_rem() %>%
   f_spc_smooth(3, 11, 0) %>%
   f_match_join(.,  scr_usca, gddah, match_dates) %>%
-  filter(complete.cases(.)) %>% 
+  filter(complete.cases(.)) %>%   
+  as_tibble() %>% 
   saveRDS(paste0(sinkdir, "MM/avg_rflt_bin3_cr_smth.rds"))
 
 spc %>%
@@ -169,6 +168,7 @@ spc %>%
   f_match_join(.,  scr_usca, gddah, match_dates) %>%
   filter(complete.cases(.)) %>%
   dplyr::select(-contains("rflt_"), rflt_500:rflt_700) %>% 
+  as_tibble() %>% 
   saveRDS(paste0(sinkdir, "MM/avg_rflt_restr.rds"))
 
 #====================================================================================== -

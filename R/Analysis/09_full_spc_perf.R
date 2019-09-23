@@ -40,7 +40,7 @@ source(paste0(path_to_utils, "001_Spectra_utils.R"))
 # Prepare data ----
  
 #load model output 
-data <- as.list(path = paste0(path_to_data, "OUT/model_output/"), list.files(pattern = "result_")) %>% 
+data <- as.list(list.files(path = paste0(path_to_data, "OUT/model_output/"), pattern = "result_", full.names = TRUE)) %>% 
   lapply(., readRDS) %>% lapply(., unnest) %>% bind_rows() %>% dplyr::select(-contains("1")) %>% 
   dplyr::select(1:7, 11, 13, 17)
 
@@ -57,7 +57,7 @@ acyear <- data %>% dplyr::select(1:7, 9:10) %>%
   bind_rows(inyear, .) %>% 
   #scale predictions and scorings
   mutate(rel = purrr::map(predobs, `[`, c(2, 8, 18, 19)) %>% 
-           purrr::map(., f_scale_si)) 
+           purrr::map(., f_scale_si, sub = "post_heading")) 
 
 # replace the unscaled scorings and predictions by scaled
 # rename as required by function
@@ -82,7 +82,10 @@ perf <- acyear %>% dplyr::select(-rel) %>%
   unnest() %>% group_by(Trait, method, data_type, trainsample, testsample, 
                         preProc, train, test, Exp, Plot_ID) %>% 
   nest() %>% 
-  mutate(eval = furrr::future_map(.x = data, method = "lin",
+  # mutate(eval = furrr::future_map(.x = data, method = "lin",
+  #                                 .f = possibly(get_errors_and_dynpars,
+  #                                               otherwise = NA_real_)))
+  mutate(eval = purrr::map(.x = data, method = "lin",
                                   .f = possibly(get_errors_and_dynpars,
                                                 otherwise = NA_real_)))
 plan("sequential")

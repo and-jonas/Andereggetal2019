@@ -56,7 +56,7 @@ source(paste0(path_to_utils, "002_full_spc_utils.R"))
 
 #Load data ----
 
-data_rflt_bin3 <- readRDS(paste0(path_to_data, "MM/smth_avg_rflt_bin3.rds"))
+data_rflt_bin3 <- readRDS(paste0(path_to_data, "OUT/MM/smth_avg_rflt_bin3.rds"))
 data <- list("rflt_bin3" = data_rflt_bin3)
 
 #====================================================================================== -
