@@ -82,10 +82,7 @@ perf <- acyear %>% dplyr::select(-rel) %>%
   unnest() %>% group_by(Trait, method, data_type, trainsample, testsample, 
                         preProc, train, test, Exp, Plot_ID) %>% 
   nest() %>% 
-  # mutate(eval = furrr::future_map(.x = data, method = "lin",
-  #                                 .f = possibly(get_errors_and_dynpars,
-  #                                               otherwise = NA_real_)))
-  mutate(eval = purrr::map(.x = data, method = "lin",
+  mutate(eval = furrr::future_map(.x = data, method = "lin",
                                   .f = possibly(get_errors_and_dynpars,
                                                 otherwise = NA_real_)))
 plan("sequential")
