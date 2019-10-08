@@ -47,7 +47,7 @@ source(paste0(path_to_utils, "003_rfe_utils.R"))
 #create sink directory
 if(!dir.exists(paste0(path_to_data, "OUT/rfe_output"))){
   dir.create(paste0(path_to_data, "OUT/rfe_output"))
-} else NULL
+}
 sinkdir <- paste0(path_to_data, "OUT/rfe_output/") #Specify output directory
 
 #====================================================================================== -

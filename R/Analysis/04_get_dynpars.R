@@ -36,7 +36,7 @@ path_to_utils <- "" #Specify path to functions
 #create sink directory
 if(!dir.exists(paste0(path_to_data, "OUT/dynpars"))){
   dir.create(paste0(path_to_data, "OUT/dynpars"))
-} else NULL
+}
 sinkdir <- paste0(path_to_data, "OUT/dynpars/") #Specify output directory
 
 source(paste0(path_to_utils, "001_spectra_utils.R"))
@@ -44,7 +44,7 @@ source(paste0(path_to_utils, "001_spectra_utils.R"))
 #====================================================================================== -
 
 #load data
-data <- readRDS(paste0(path_to_data, "scr_data/scr_sca.rds"))
+data <- read.csv(paste0(path_to_data, "scr_data/scr_sca.csv"))
 
 # extract DynPars: Scorings ----
 data <- data %>% 

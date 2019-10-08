@@ -47,7 +47,7 @@ path_to_data <- "" #Specify path to data
 #create sink directory
 if(!dir.exists(paste0(path_to_data, "OUT/model_output"))){
   dir.create(paste0(path_to_data, "OUT/model_output"))
-} else NULL
+}
 sinkdir <- paste0(path_to_data, "OUT/model_output/") #Specify output directory
 
 source(paste0(path_to_utils, "002_full_spc_utils.R"))
@@ -67,21 +67,16 @@ data <- list("rflt_bin3" = data_rflt_bin3)
 Exp <- c("FPWW012", "FPWW018", "FPWW022")
 
 # create train list of length 7
-train <- list(
-  Exp[1], Exp[2], Exp[3], Exp[1:2], Exp[2:3], Exp[c(1, 3)],
-  Exp[1:3]
-  )
+train <- list(Exp[1], Exp[2], Exp[3], Exp[1:2], Exp[2:3], Exp[c(1, 3)], Exp[1:3])
 
 # create validation list of length 7
-test <- list(
-  c(list(Exp[2], Exp[3], Exp[2:3])),
+test <- list(c(list(Exp[2], Exp[3], Exp[2:3])),
              c(list(Exp[1], Exp[3], Exp[c(1, 3)])),
              c(list(Exp[1], Exp[2], Exp[1:2])),
              c(list(Exp[3])),
              c(list(Exp[1])),
              c(list(Exp[2])),
-             c(list(Exp[1], Exp[2], Exp[3]))
-             )
+             c(list(Exp[1], Exp[2], Exp[3])))
 
 Grid <- expand.grid(committees = c(1, 2, 5, 10, 20),
                         neighbors = 0)

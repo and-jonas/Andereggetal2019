@@ -23,12 +23,16 @@
 # main functions ---- 
 
 #Wrapper for SpATS
-f_spats <- function(data, response = "value", random = as.formula("~Yf + Xf"),
-                    genotype.as.random = TRUE, genotype = "Gen_Name") {
-  SpATS(response = response, random = ~ Yf + Xf,
+f_spats <- function(data, response = response, random = random, fixed = NULL, 
+                    genotype.as.random = genotype.as.random, genotype = genotype) {
+  SpATS(response = response, random = as.formula(random), fixed = as.formula(fixed), 
         spatial = ~PSANOVA(RangeBL, RowBL, nseg = c(20,20), nest.div=c(2,2)), 
         genotype = genotype, genotype.as.random = genotype.as.random, data = data,
         control = list(maxit = 100, tolerance = 1e-03, monitoring = 0))
+}
+
+get_h2 <- function(obj){
+  ifelse(length(unique(obj$data$Rep))> 1, SpATS::getHeritability(obj), NA)
 }
 
 #extract BLUE from SpATS
@@ -62,15 +66,17 @@ get_h2_asreml <- function(data, fixed, random, residual, cullis = TRUE){
     data$Gen_Name <- as.factor(data$Gen_Name)
   }
   as <- asreml(fixed = as.formula(fixed),
-               random = as.formula(paste("~", random)),
-               residual = as.formula(paste("~", residual)),
+               random = as.formula(random),
+               residual = as.formula(residual),
                data = data,
-               trace = FALSE)
+               trace = FALSE
+               ,na.action = na.method(x = "include", y = "include")
+               )
+  
   if(cullis){
     GenVar <- summary(as)$varcomp["Gen_Name","component"]
     #Predict genotypic mean values to estimate avsed
     pv.G <- predict(as, classify = "Gen_Name")
-    pv.G$pvals
     avsed.G<-pv.G$avsed
     #The Cullis version of heritability based on avsed^2 and V.G
     h2<- 1-(avsed.G^2/(2*GenVar))
@@ -85,6 +91,34 @@ get_h2_asreml <- function(data, fixed, random, residual, cullis = TRUE){
     h2 <- GenVar/(GenVar +  GenExpVar/n1 + ErrVar/n2)
   }
 }
+
+#calculate heritability, using year-wise BLUEs
+get_h2_asreml2 <- function(data, fixed, random, residual, cullis = TRUE){
+  if(!is.factor(data$Gen_Name)){
+    data$Gen_Name <- as.factor(data$Gen_Name)
+  }
+  as <- asreml(fixed = as.formula(fixed),
+               random = as.formula(random),
+               residual = as.formula(residual),
+               data = data,
+               trace = FALSE)
+  if(cullis){
+    GenVar <- summary(as)$varcomp["Gen_Name","component"]
+    #Predict genotypic mean values to estimate avsed
+    pv.G <- predict(as, classify = "Gen_Name")
+    avsed.G<-pv.G$avsed
+    #The Cullis version of heritability based on avsed^2 and V.G
+    h2<- 1-(avsed.G^2/(2*GenVar))
+  } else {
+    #number of Years
+    n <- data %>% group_by(Exp) %>% nest() %>% nrow
+    GenVar <- summary(as)$varcomp["Gen_Name","component"]
+    ErrVar <- summary(as)$varcomp["units!R","component"]
+    h2 <- GenVar/(GenVar + ErrVar)
+  }
+}
+
+
 
 # helper functions ----
 

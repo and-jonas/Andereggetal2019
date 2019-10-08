@@ -27,7 +27,6 @@
 .libPaths("") #Specify path to R Libraries
 
 library(tidyverse)
-library(gapminder)
 
 path_to_data <- ""#Specify path to data
 
@@ -74,7 +73,7 @@ Data <- list(head, grnyld, grnprt, pars_scr, pars_SI) %>%
   Reduce(function(dtf1,dtf2) full_join(dtf1, dtf2, by = "Plot_ID"), .)
 
 # Add design
-exp <- read.csv(paste0(path_to_data, "helper_files/exp_design.csv")) %>% 
+exp_design <- read.csv(paste0(path_to_data, "helper_files/exp_design.csv")) %>% 
   as_tibble() %>% 
   mutate_at(vars(Lot, RangeLot, RowLot, Range, Row, RowBL, RangeBL), funs(as.numeric)) %>% 
   mutate_at(vars(Gen_ID, Rep, Xf, Yf), funs(as.factor))
@@ -86,3 +85,4 @@ Data <- full_join(exp_design, Data, by = "Plot_ID") %>%
 saveRDS(Data, paste0(path_to_data, "other_data/data_aov.rds"))
 
 #====================================================================================== -
+  

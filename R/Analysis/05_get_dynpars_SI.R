@@ -39,7 +39,7 @@ path_to_utils <- "" #Specify path to functions
 #create sink directory
 if(!dir.exists(paste0(path_to_data, "OUT/dynpars"))){
   dir.create(paste0(path_to_data, "OUT/dynpars"))
-} else NULL
+}
 sinkdir <- paste0(path_to_data, "OUT/dynpars/") #Specify output directory
 
 source(paste0(path_to_utils, "001_spectra_utils.R"))

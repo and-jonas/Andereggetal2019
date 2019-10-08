@@ -43,7 +43,7 @@ path_to_utils <- "" #Specify path to functions
 #create sink directory
 if(!dir.exists(paste0(path_to_data, "OUT"))){
   dir.create(paste0(path_to_data, "OUT"))
-} else NULL
+}
 sinkdir <- paste0(path_to_data, "OUT/") #Specify output directory
 
 source(paste0(path_to_utils, "001_spectra_utils.R"))
@@ -131,7 +131,7 @@ err_overall <- metrics_overall %>% filter(metric == "Error") %>%
 #====================================================================================== -
 
 #rearrange output
-perf_long <- readRDS(paste0(sinkdir, "SI_perf.rds")) %>%
+perf_long <- readRDS(paste0(sinkdir, "SI_perf.rds"))  %>%
   dplyr::select(-data) %>%
   #drop plots with missing results (NA in eval)
   mutate(remove = purrr::map_chr(eval, length)) %>% filter(remove > 1) %>% dplyr::select(-remove) %>%
@@ -152,6 +152,7 @@ corr_exp <- perf_long %>%
                                 .f = do_cor_test)) %>%
   dplyr::select(-data) %>%
   arrange(Trait, Exp, Dynpar, desc(abs(pearson_r)))
+
 
 #get correlations overall
 corr_overall <- perf_long %>%
@@ -192,6 +193,6 @@ corr_exp <- perf_long %>%
 
 #====================================================================================== -
 
-## THESE ARE FINAL RESULTS 
+## THESE ARE FINAL RESULTS
 
 #====================================================================================== -

@@ -1027,9 +1027,9 @@ f_match_join <- function(spc, sen, gddah, matches) {
   if(!is.date(gddah$heading_date)){gddah$heading_date = as.Date(gddah$heading_date)}
   
   #matching dates lookup table
-  match_dates <- matches %>% transmute(scor_date = scor %>% as.Date(),
-                                       meas_date = meas %>%  as.Date(),
-                                       ref_date = reference_date %>% as.Date())
+  match_dates <- matches %>% transmute(scor_date = scor %>% as.Date("%d.%m.%Y"),
+                                       meas_date = meas %>%  as.Date("%d.%m.%Y"),
+                                       ref_date = reference_date %>% as.Date("%d.%m.%Y"))
   
   #assign scoring dates their measurement date, 
   #if possible (max 1 day difference)

@@ -39,11 +39,12 @@ path_to_utils <- "" #Specify path to functions
 #create sink directory
 if(!dir.exists(paste0(path_to_data, "OUT"))){
   dir.create(paste0(path_to_data, "OUT"))
-} else NULL
+}
 sinkdir <- paste0(path_to_data, "OUT/") #Specify output directory
 
 #load required function
 source(paste0(path_to_utils, "004_spat_aov_utils.R"))
+source(paste0(path_to_utils, "000_helper_funcs.R"))
 
 #====================================================================================== -
 
@@ -56,18 +57,20 @@ Data <- readRDS(paste0(path_to_data, "other_data/data_aov.rds"))
 #for GY, GPC and heading date
 Exp_wise <- Data %>% 
   dplyr::select(-heading_date) %>% 
-  gather(Trait, value, 15:length(.)) %>%
-  filter(Trait %in% c("heading_GDDAS", "GY", "GPC")) %>%
+  gather(Trait, value, 16:length(.)) %>%
+  filter(grepl("PSRI|GY|GPC|lin_Cnp", Trait)) %>%
   distinct() %>% 
-  group_by(Exp, Trait) %>% 
-  nest() %>%  
+  #remove lots with missing data
+  group_by(Exp, Trait, Rep) %>% nest() %>% 
+  mutate(remove = purrr::map_chr(data, remove_reps, missing = 200)) %>% filter(remove == FALSE) %>% dplyr::select(-remove) %>% unnest() %>% ungroup() %>% 
+  group_by(Exp, Trait) %>% nest() %>%  
   #calculate within-year repeatablity
-  mutate(w2 = purrr::map(.x = data, genotype.as.random = TRUE,
+  mutate(w2 = purrr::map(.x = data, response = "value", random = "~ Xf + Yf", fixed = "~ check", genotype.as.random = TRUE, genotype = "Gen_Name",
                          .f = possibly(f_spats, otherwise = NA_real_)) %>%
            purrr::map_dbl(.x = .,
-                          .f = possibly(getHeritability, otherwise = NA_real_))) %>%
+                          .f = possibly(get_h2, otherwise = NA_real_))) %>%
   #extract BLUEs and spatially corrected plot values
-  mutate(obj = purrr::map(.x = data, genotype.as.random = FALSE,
+  mutate(obj = purrr::map(.x = data, response = "value", random = "~ Xf + Yf", fixed = "~ NULL", genotype.as.random = FALSE, genotype = "Gen_Name", 
                            .f = possibly(f_spats, otherwise = NA_real_))) %>%  
   mutate(BLUE =  purrr::map(.x = obj,
                       .f = possibly(get_BLUE_spats, otherwise = NA_real_))) %>% 
@@ -80,27 +83,61 @@ BLUEs <- Exp_wise %>% dplyr::select(Exp, Trait, BLUE) %>%
   unnest() %>% 
   spread(., Trait, BLUE)
 
+#export for feature selection
 saveRDS(BLUEs, paste0(sinkdir, "BLUEs.rds"))
 
 #====================================================================================== -
-  
-#h2 ----
 
-across <- Exp_wise %>%
-  dplyr::select(Trait, Exp, spat_corr) %>% 
+#TWO STAGE ----
+#heritability from best linear unbiased estimators
+h2_BLUE <- Exp_wise %>%
+  dplyr::select(Trait, Exp, BLUE) %>% 
   #no data for GPC in 2018, exclude
   filter(Trait!="GPC" | Exp != "FPWW022") %>% unnest() %>% 
   mutate(Gen_Name = as.factor(Gen_Name)) %>% 
-  group_by(Trait, Exp, Lot) %>% nest() %>% 
-  #check whether there is data for both lots
-  mutate(remove = purrr::map_chr(data, remove_reps, value = "spat_corr", missing = 200)) %>% filter(remove == FALSE) %>% dplyr::select(-remove) %>% 
-  ungroup() %>% unnest() %>% 
   group_by(Trait) %>% nest() %>% 
-  mutate(h2_spat_corr_c = purrr::map_dbl(data, possibly(get_h2_asreml, otherwise = NA_real_), #after bug-fix, replace by map_dbl
-                                         fixed = "spat_corr ~ Exp",
-                                         random = "Gen_Name + Gen_Name:Exp",
-                                         residual = "NULL",
-                                         cullis = TRUE))
+  mutate(h2_BLUE = purrr::map_dbl(data, possibly(get_h2_asreml2, otherwise = NA_real_), #after bug-fix, replace by map_dbl
+                                         fixed = "BLUE ~ Exp",
+                                         random = "~Gen_Name",
+                                         residual = "~NULL",
+                                         cullis = FALSE)) %>% 
+  mutate(h2_BLUE_c = purrr::map_dbl(data, possibly(get_h2_asreml2, otherwise = NA_real_), #after bug-fix, replace by map_dbl
+                                  fixed = "BLUE ~ Exp",
+                                  random = "~Gen_Name",
+                                  residual = "~NULL",
+                                  cullis = TRUE)) 
+
+#====================================================================================== -
+
+#ONE STAGE ----
+#heritability from spatially corrected plot values
+#scorings and agronomic traits
+h2_spatcorr <- Exp_wise %>%
+  dplyr::select(Trait, Exp, spat_corr) %>% 
+  #no data for GPC in 2018, exclude
+  filter(Trait!="GPC" | Exp != "FPWW022") %>% unnest() %>%
+  filter(grepl("GY|lin_Cnp", Trait)) %>% 
+  mutate(Gen_Name = as.factor(Gen_Name)) %>% 
+  group_by(Trait) %>% nest() %>% 
+  mutate(h2_spatcorr = purrr::map_dbl(data, possibly(get_h2_asreml, otherwise = NA_real_),
+                                      fixed = "spat_corr ~ Exp ",
+                                      random  = "~ Gen_Name + Gen_Name:Exp + Rep:at(Exp)",
+                                      residual = "~dsum(~id(units) | Exp)",
+                                      cullis = TRUE))
+
+#for spectral features
+h2_spatcorr <- Exp_wise %>%
+  dplyr::select(Trait, Exp, spat_corr) %>% 
+  #no data for GPC in 2018, exclude
+  filter(Trait!="GPC" | Exp != "FPWW022") %>% unnest() %>%
+  filter(grepl("PSRI", Trait)) %>% 
+  mutate(Gen_Name = as.factor(Gen_Name)) %>% 
+  group_by(Trait) %>% nest() %>% 
+  mutate(h2_spatcorr = purrr::map_dbl(data, possibly(get_h2_asreml, otherwise = NA_real_),
+                                      fixed = "spat_corr ~ Exp",
+                                      random  = "~ Gen_Name + Gen_Name:Exp + Rep:at(Exp, 1)",
+                                      residual = "~dsum(~id(units) | Exp)",
+                                      cullis = TRUE))
 
 #====================================================================================== -
 
