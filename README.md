@@ -22,6 +22,10 @@ Folder `Analysis`contains scripts to implement the analysis and obtain results c
 
 ### Utils
 
+#### 000_helper_funcs.R
+
+1.-3. Helper functions to remove incomplete datasets (Lots, Years, measurement series). 
+
 #### 001_spectra_utils.R
 
 1. `f_spc_smooth` applies the Savitzky-Golay smoothing filter to raw spectra (wrapper for `prospectr::SavitzkyGolay`)
@@ -53,13 +57,15 @@ Folder `Analysis`contains scripts to implement the analysis and obtain results c
 2. `tidy_rfe_output` gathers results of resamples and creates summary statistics of performance and feature ranks.
 3. `plot_perf_profile` creates simple performance profile plots.
 
-#### 004_h2_BLUEs_utils.R
+#### 004_spat_aov_utils.R
 
 1. `f_spats` fits the SpATS model to raw plot-based data (wrapper for `SpATS::SpATS`)
-2. `spat_corr_spats` computes spatially corrected values for each experimental plot from the spats object (`object$intercept` + `object$coeff`+ `object$residuals`).  
-3. `get_BLUE_spats` computes the best linear unbiased estimator (BLUE) for each genotype. 
-4. `get_h2_asreml` calculates heritability across years using spatially corrected plot values and the formula proposed by Cullis. 
-5. Several data wrangling helper functions. 
+2. `get_h2` reports repeatability, or `NA`if no replicate measurements are available. This is a wrapper for `SpATS::getHeritability`. 
+3. `spat_corr_spats` computes spatially corrected values for each experimental plot from the spats object (`object$intercept` + `object$coeff`+ `object$residuals`).  
+4. `get_BLUE_spats` computes the best linear unbiased estimator (BLUE) for each genotype. 
+5. `get_h2_asreml` calculates heritability across years using spatially corrected plot values and the formula proposed by Cullis. 
+6. `get_h2_asreml2` calculates heritability across years using best linear unbiased estimators. 
+6. Data wrangling helper functions. 
 
 ### Scripts
 
