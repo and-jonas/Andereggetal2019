@@ -37,9 +37,9 @@ Folder `Analysis`contains scripts to implement the analysis and obtain results c
 7. `f_spc_trim` removes noisy parts of the signal in pre-determined ranges
 8. `f_cont_rem` performs continuum removal (wrapper for `prospectr::ContinuumRemoval`)
 9. `f_match_join` joins spectral and scoring datasets by assessment/measurement dates, using a supplied template of matching dates. This function also adds growing degree days for scoring and measurement time points.
-9. `get_dynpars_SI` extracts dynamics parameters from spectral indices. 
-10. `get_errors_and_dynpars`Performs linear interpolation of scorings and index values (data in growing degree days after heading),  extracts dynamics parameters and calculates overall error between the two fitted curves. Parametric models instead of linear interpolation are also supported.
-11. Several data wrangling helper functions. 
+10. `get_dynpars_SI` extracts dynamics parameters from spectral indices. 
+11. `get_errors_and_dynpars`Performs linear interpolation of scorings and index values (data in growing degree days after heading),  extracts dynamics parameters and calculates overall error between the two fitted curves. Parametric models instead of linear interpolation are also supported.
+12. Several data wrangling helper functions. 
 
 
 #### 002_full_spc_utils.R
@@ -65,7 +65,7 @@ Folder `Analysis`contains scripts to implement the analysis and obtain results c
 4. `get_BLUE_spats` computes the best linear unbiased estimator (BLUE) for each genotype. 
 5. `get_h2_asreml` calculates heritability across years using spatially corrected plot values and the formula proposed by Cullis. 
 6. `get_h2_asreml2` calculates heritability across years using best linear unbiased estimators. 
-6. Data wrangling helper functions. 
+7. Data wrangling helper functions. 
 
 ### Scripts
 
