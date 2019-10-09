@@ -48,7 +48,7 @@ Folder `Analysis`contains scripts to implement the analysis and obtain results c
 2. `perform_sampling` performs up- or down-sampling to create balanced evaluation datasets (wrapper for `caret::upSample` or `caret::downSample`)
 3. `get_RMSE_sample` calculates the root mean square error (RMSE) of up- or downsamples
 4. `extract_predobs` creates predictions using a fitted model and extracts the corresponding real observations
-5. `eval_full_spc_cross` fits full-spectrum models, extracts performance metrics, performs sampling and extracts predobs for these samples, performs all possible variants of leave-year(s)-out cross-validation. This is essentially a wrapper function for `ranger::ranger` and `Cubist::cubist` via the `caret::train` interface. This function is designed to run in parallel on the high performance computing cluster of ETH Zürich. Must be serialized if no access to such a facility is available. Very long computation times should be expected. 
+5. `eval_full_spc_cross` fits full-spectrum models, extracts performance metrics, performs sampling (up- or downsampling of both training and test data) and extracts predictions and real observations for these samples, performs all possible variants of leave-year(s)-out cross-validation. This is essentially a wrapper function for `pls::plsr` and `Cubist::cubist` via the `caret::train` interface. This function is designed to run in parallel on the high performance computing cluster of ETH Zürich. Must be serialized if no access to such a facility is available. Very long computation times should be expected. 
 6. Several data wrangling helper functions. 
 
 #### 003_rfe_utils.R
